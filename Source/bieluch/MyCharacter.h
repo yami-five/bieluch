@@ -107,16 +107,11 @@ public:
 
 	TArray<char> Chars;
 
-	char operator[] (int32 i) {
+	char& operator[] (int32 i) {
 		return Chars[i];
 	}
 
 	void Add(char chr) {
 		Chars.Add(chr);
-	}
-
-	void ChangeValue(char chr, int32 index)
-	{
-		Chars[index] = chr;
 	}
 };

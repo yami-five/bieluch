@@ -163,8 +163,8 @@ void AMyCharacter::GenMaze()
 
 		if (map[x][y] == wall)
 		{
-			map[f[0]].ChangeValue(f[1],passage);
-			map[x].ChangeValue(y, passage);
+			map[f[0]][f[1]]=passage;
+			map[x][y]=passage;
 			if (x >= 2 && map[x - 2][y] == wall)
 			{
 				frontiers.Add(FIntArray());
@@ -177,9 +177,9 @@ void AMyCharacter::GenMaze()
 			{
 				frontiers.Add(FIntArray());
 				frontiers[frontiers.Num() - 1].Add(x);
-				frontiers[frontiers.Num() - 1].Add(y);
+				frontiers[frontiers.Num() - 1].Add(y-1);
 				frontiers[frontiers.Num() - 1].Add(x);
-				frontiers[frontiers.Num() - 1].Add(y);
+				frontiers[frontiers.Num() - 1].Add(y-2);
 			}
 			if (x < width - 2 && map[x + 2][y] == wall)
 			{
