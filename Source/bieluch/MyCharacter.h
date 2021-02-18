@@ -72,7 +72,7 @@ protected:
 	 */
 	void LookUpAtRate(float Rate);
 
-	void GenMaze();
+	TArray<FCharArray> GenMaze();
 
 protected:
 	// APawn interface

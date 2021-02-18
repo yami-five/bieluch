@@ -105,9 +105,9 @@ void AMyCharacter::LookUpAtRate(float Rate)
 
 void AMyCharacter::Spawn()
 {
-	AMyCharacter::GenMaze();
+	TArray<FCharArray> maze=AMyCharacter::GenMaze();
 
-	if (SpawnTile)
+	if (SpawnPassage && SpawnWall)
 	{
 		UWorld* world = GetWorld();
 		if (world)
@@ -115,22 +115,36 @@ void AMyCharacter::Spawn()
 			FActorSpawnParameters spawnParams;
 			spawnParams.Owner = this;
 
-			FRotator rotator;
+			FRotator rotator = { 0,0,0 };
 
-			FVector spawnLocation = { 0,0,0 };
+			float x = 5200.0;
+			float y = 5200.0;
+			for (int i = 0; i < 17; i++)
+			{
+				y = 5200.0;
+				for (int j = 0; j < 17; j++)
+				{
+					FVector spawnLocation = { x,y,0 };
 
-			world->SpawnActor<ABaseTile>(SpawnTile, spawnLocation, rotator, spawnParams);
+					if(maze[i][j]=='X')
+						world->SpawnActor<ABaseTile>(SpawnWall, spawnLocation, rotator, spawnParams);
+					else
+						world->SpawnActor<ABaseTile>(SpawnPassage, spawnLocation, rotator, spawnParams);
+					y = y - 650.0;
+				}
+				x = x - 650.0;
+			}
 		}
 	}
 }
 
-void AMyCharacter::GenMaze()
+TArray<FCharArray> AMyCharacter::GenMaze()
 {
 	FRandomStream rand;
 	char wall = 'X';
 	char passage = 'O';
-	int32 width = 16;
-	int32 height = 16;
+	int32 width = 17;
+	int32 height = 17;
 	TArray<FIntArray> frontiers;
 	TArray<FCharArray> map;
 	int32 x= rand.RandRange(0, width);
@@ -200,4 +214,5 @@ void AMyCharacter::GenMaze()
 			}
 		}
 	}
+	return map;
 }
