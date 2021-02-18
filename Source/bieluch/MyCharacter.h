@@ -34,7 +34,7 @@ public:
 		TSubclassOf<class ABaseTile> SpawnWall;
 
 	UFUNCTION(BlueprintCallable)
-		void Spawn();
+		FVector Spawn();
 
 protected:
 	// Called when the game starts or when spawned

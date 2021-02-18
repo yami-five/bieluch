@@ -103,9 +103,32 @@ void AMyCharacter::LookUpAtRate(float Rate)
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
-void AMyCharacter::Spawn()
+FVector AMyCharacter::Spawn()
 {
 	TArray<FCharArray> maze=AMyCharacter::GenMaze();
+
+	FVector PlayerSpawnLoc = FVector(0.0f, 0.0f, 0.0f);
+	
+	if (maze[8][8] == 'O')
+	{
+		PlayerSpawnLoc.X = -221.3;
+		PlayerSpawnLoc.Y = -221.3;
+	}
+	else if (maze[8][9] == 'O')
+	{
+		PlayerSpawnLoc.X = 221.3;
+		PlayerSpawnLoc.Y = -221.3;
+	}
+	else if (maze[9][8] == 'O')
+	{
+		PlayerSpawnLoc.X = -221.3;
+		PlayerSpawnLoc.Y = 221.3;
+	}
+	else
+	{
+		PlayerSpawnLoc.X = 221.3;
+		PlayerSpawnLoc.Y = 221.3;
+	}
 
 	if (SpawnPassage && SpawnWall)
 	{
@@ -117,11 +140,11 @@ void AMyCharacter::Spawn()
 
 			FRotator rotator = { 0,0,0 };
 
-			float x = 5200.0;
-			float y = 5200.0;
+			float x = 3318.8;
+			float y = 3318.8;
 			for (int i = 0; i < 17; i++)
 			{
-				y = 5200.0;
+				y = 3318.8;
 				for (int j = 0; j < 17; j++)
 				{
 					FVector spawnLocation = { x,y,0 };
@@ -130,12 +153,13 @@ void AMyCharacter::Spawn()
 						world->SpawnActor<ABaseTile>(SpawnWall, spawnLocation, rotator, spawnParams);
 					else
 						world->SpawnActor<ABaseTile>(SpawnPassage, spawnLocation, rotator, spawnParams);
-					y = y - 650.0;
+					y = y - 442.5;
 				}
-				x = x - 650.0;
+				x = x - 442.5;
 			}
 		}
 	}
+	return PlayerSpawnLoc;
 }
 
 TArray<FCharArray> AMyCharacter::GenMaze()
