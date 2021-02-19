@@ -26,17 +26,17 @@ AMyCharacter::AMyCharacter()
 	FirstPersonCameraComponent->SetRelativeLocation(FVector(-39.56f, 1.75f, 64.f)); // Position the camera
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
-	static ConstructorHelpers::FObjectFinder<UBlueprint> BlueprintTile(TEXT("Blueprint'/Game/Blueprints/BP_Tile.BP_Tile'"));
+	static ConstructorHelpers::FObjectFinder<UClass> BlueprintTile(TEXT("Blueprint'/Game/Blueprints/BP_Tile.BP_Tile_C'"));
 	if (BlueprintTile.Object) {
-		SpawnTile = (UClass*)BlueprintTile.Object->GeneratedClass;
+		SpawnTile = (UClass*)BlueprintTile.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<UBlueprint> BlueprintPassage(TEXT("Blueprint'/Game/Blueprints/BP_Passage.BP_Passage'"));
+	static ConstructorHelpers::FObjectFinder<UClass> BlueprintPassage(TEXT("Blueprint'/Game/Blueprints/BP_Passage.BP_Passage_C'"));
 	if (BlueprintPassage.Object) {
-		SpawnPassage = (UClass*)BlueprintPassage.Object->GeneratedClass;
+		SpawnPassage = (UClass*)BlueprintPassage.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<UBlueprint> BlueprintWall(TEXT("Blueprint'/Game/Blueprints/BP_Wall.BP_Wall'"));
+	static ConstructorHelpers::FObjectFinder<UClass> BlueprintWall(TEXT("Blueprint'/Game/Blueprints/BP_Wall.BP_Wall_C'"));
 	if (BlueprintWall.Object) {
-		SpawnWall = (UClass*)BlueprintWall.Object->GeneratedClass;
+		SpawnWall = (UClass*)BlueprintWall.Object;
 	}
 }
 
