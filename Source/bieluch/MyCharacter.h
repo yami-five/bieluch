@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "BaseTile.h"
 #include "MyCharacter.generated.h"
 
 class UCameraComponent;
@@ -23,18 +22,6 @@ class BIELUCH_API AMyCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	AMyCharacter();
-
-	UPROPERTY()
-		TSubclassOf<class ABaseTile> SpawnTile;
-
-	UPROPERTY()
-		TSubclassOf<class ABaseTile> SpawnPassage;
-
-	UPROPERTY()
-		TSubclassOf<class ABaseTile> SpawnWall;
-
-	UFUNCTION(BlueprintCallable)
-		FVector Spawn();
 
 protected:
 	// Called when the game starts or when spawned
@@ -72,8 +59,6 @@ protected:
 	 */
 	void LookUpAtRate(float Rate);
 
-	TArray<FCharArray> GenMaze();
-
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
@@ -84,34 +69,3 @@ public:
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 };
 
-USTRUCT()
-struct FIntArray {
-	GENERATED_BODY()
-public:
-
-	TArray<int32> Ints;
-
-	int32 operator[] (int32 i) {
-		return Ints[i];
-	}
-
-	void Add(int32 number) {
-		Ints.Add(number);
-	}
-};
-
-USTRUCT()
-struct FCharArray {
-	GENERATED_BODY()
-public:
-
-	TArray<char> Chars;
-
-	char& operator[] (int32 i) {
-		return Chars[i];
-	}
-
-	void Add(char chr) {
-		Chars.Add(chr);
-	}
-};
