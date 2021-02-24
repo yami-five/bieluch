@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "BaseTile.h"
+#include "MyCharacter.h"
 #include "BaseBieluch.h"
 #include "CPP_BIeluch_GameMode.generated.h"
 
@@ -14,19 +15,23 @@ class BIELUCH_API ACPP_BIeluch_GameMode : public AGameModeBase
 	GENERATED_BODY()
 	
 	UPROPERTY()
-		TSubclassOf<class ABaseTile> SpawnTile;
+		TSubclassOf<class ABaseTile> SubTile;
 
 	UPROPERTY()
-		TSubclassOf<class ABaseTile> SpawnPassage;
+		TSubclassOf<class ABaseTile> SubPassage;
 
 	UPROPERTY()
-		TSubclassOf<class ABaseTile> SpawnWall;
+		TSubclassOf<class ABaseTile> SubWall;
 
 	UPROPERTY()
-		TSubclassOf<class ABaseTile> SpawnBieluch;
+		TSubclassOf<class ABaseBieluch> SubBieluch;
+
+	UPROPERTY()
+		TSubclassOf<class AMyCharacter> SubCharacter;
 
 	UFUNCTION(BlueprintCallable)
-		FVector Spawn(TArray<FVector>& bieluchsLocs);
+		void Spawn();
+
 public:
 	ACPP_BIeluch_GameMode();
 
@@ -35,6 +40,12 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	void SpawnMaze(TArray<FCharArray> maze);
+
+	void SpawnPlayer(TArray<FCharArray> maze);
+
+	TArray<FVector> bieluchsLocations;
 };
 
 USTRUCT()
