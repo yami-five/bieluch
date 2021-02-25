@@ -6,9 +6,9 @@
 
 ACPP_BIeluch_GameMode::ACPP_BIeluch_GameMode()
 {
-	static ConstructorHelpers::FObjectFinder<UClass> BlueprintTile(TEXT("Blueprint'/Game/Blueprints/BP_Tile.BP_Tile_C'"));
-	if (BlueprintTile.Object) {
-		SubTile = (UClass*)BlueprintTile.Object;
+	static ConstructorHelpers::FObjectFinder<UClass> BlueprintTileBieluchSpawner(TEXT("Blueprint'/Game/Blueprints/BP_BieluchSpawner.BP_BieluchSpawner_C'"));
+	if (BlueprintTileBieluchSpawner.Object) {
+		SubBieluchSpawner = (UClass*)BlueprintTileBieluchSpawner.Object;
 	}
 	static ConstructorHelpers::FObjectFinder<UClass> BlueprintPassage(TEXT("Blueprint'/Game/Blueprints/BP_Passage.BP_Passage_C'"));
 	if (BlueprintPassage.Object) {
@@ -17,10 +17,6 @@ ACPP_BIeluch_GameMode::ACPP_BIeluch_GameMode()
 	static ConstructorHelpers::FObjectFinder<UClass> BlueprintWall(TEXT("Blueprint'/Game/Blueprints/BP_Wall.BP_Wall_C'"));
 	if (BlueprintWall.Object) {
 		SubWall = (UClass*)BlueprintWall.Object;
-	}
-	static ConstructorHelpers::FObjectFinder<UClass> BlueprintBieluch(TEXT("Blueprint'/Game/Blueprints/BP_Bieluch.BP_Bieluch_C'"));
-	if (BlueprintBieluch.Object) {
-		SubBieluch = (UClass*)BlueprintBieluch.Object;
 	}
 	static ConstructorHelpers::FObjectFinder<UClass> BlueprintCharacter(TEXT("Blueprint'/Game/Blueprints/BP_Character.BP_Character_C'"));
 	if (BlueprintCharacter.Object) {
@@ -160,7 +156,7 @@ void ACPP_BIeluch_GameMode::SpawnMaze(TArray<FCharArray> maze)
 {
 	FRandomStream rand;
 	int numberOfSpawnedBieluchs = 0;
-	if (SubPassage && SubWall && SubBieluch)
+	if (SubPassage && SubWall && SubBieluchSpawner)
 	{
 		UWorld* world = GetWorld();
 		if (world)
@@ -169,7 +165,6 @@ void ACPP_BIeluch_GameMode::SpawnMaze(TArray<FCharArray> maze)
 			spawnParams.Owner = this;
 			int possibility = 30;
 			FRotator rotator = { 0,0,0 };
-			ABaseBieluch* currentBieluch;
 			float x = 3318.8;
 			float y = 3318.8;
 			for (int i = 0; i < 17; i++)
@@ -183,31 +178,14 @@ void ACPP_BIeluch_GameMode::SpawnMaze(TArray<FCharArray> maze)
 						world->SpawnActor<ABaseTile>(SubWall, spawnLocation, rotator, spawnParams);
 					else
 					{
-						world->SpawnActor<ABaseTile>(SubPassage, spawnLocation, rotator, spawnParams);
-						
-						if ((i==1||i==2) && (j==1||j==2) && numberOfSpawnedBieluchs == 0)
+						if (((i==1||i==2) && ((j==1||j==2) && numberOfSpawnedBieluchs == 0)||((j == 15 || j == 16) && numberOfSpawnedBieluchs == 1))|| ((i == 15 || i == 16) && ((j == 1 || j == 2) && numberOfSpawnedBieluchs == 2) || ((j == 15 || j == 16) && numberOfSpawnedBieluchs == 3)))
 						{
-							currentBieluch=world->SpawnActor<ABaseBieluch>(SubBieluch, { spawnLocation.X, spawnLocation.Y, 120 }, rotator, spawnParams);
 							++numberOfSpawnedBieluchs;
-							currentBieluch->SetNumber(numberOfSpawnedBieluchs);
+							world->SpawnActor<ABaseTile>(SubBieluchSpawner, spawnLocation, rotator, spawnParams);
 						}
-						else if ((i == 1 || i == 2) && (j == 15 || j == 16) && numberOfSpawnedBieluchs == 1)
+						else
 						{
-							currentBieluch = world->SpawnActor<ABaseBieluch>(SubBieluch, { spawnLocation.X, spawnLocation.Y, 120 }, rotator, spawnParams);
-							++numberOfSpawnedBieluchs;
-							currentBieluch->SetNumber(numberOfSpawnedBieluchs);
-						}
-						else if ((i == 15 || i == 16) && (j == 1 || j == 2) && numberOfSpawnedBieluchs == 2)
-						{
-							currentBieluch = world->SpawnActor<ABaseBieluch>(SubBieluch, { spawnLocation.X, spawnLocation.Y, 120 }, rotator, spawnParams);
-							++numberOfSpawnedBieluchs;
-							currentBieluch->SetNumber(numberOfSpawnedBieluchs);
-						}
-						else if ((i == 15 || i == 16) && (j == 15 || j == 16) && numberOfSpawnedBieluchs == 3)
-						{
-							currentBieluch = world->SpawnActor<ABaseBieluch>(SubBieluch, { spawnLocation.X, spawnLocation.Y, 120 }, rotator, spawnParams);
-							++numberOfSpawnedBieluchs;
-							currentBieluch->SetNumber(numberOfSpawnedBieluchs);
+							world->SpawnActor<ABaseTile>(SubPassage, spawnLocation, rotator, spawnParams);
 						}
 					}
 					y = y - 442.5;
