@@ -23,6 +23,9 @@ class BIELUCH_API ACPP_BIeluch_GameMode : public AGameModeBase
 	UPROPERTY()
 		TSubclassOf<class ABaseTile> SubWall;
 
+	UPROPERTY()
+		TSubclassOf<class ABaseTile> SubBlood;
+
 	/*UPROPERTY()
 		TSubclassOf<class ABaseBieluch> SubBieluch;*/
 
@@ -44,6 +47,8 @@ protected:
 	void SpawnMaze(TArray<FCharArray> maze);
 
 	void SpawnPlayer(TArray<FCharArray> maze);
+
+	bool CheckMaze(TArray<FCharArray> maze);
 
 	TArray<FVector> bieluchsLocations;
 };

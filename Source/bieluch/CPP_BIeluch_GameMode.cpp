@@ -18,6 +18,10 @@ ACPP_BIeluch_GameMode::ACPP_BIeluch_GameMode()
 	if (BlueprintWall.Object) {
 		SubWall = (UClass*)BlueprintWall.Object;
 	}
+	static ConstructorHelpers::FObjectFinder<UClass> BlueprintBlood(TEXT("Blueprint'/Game/Blueprints/BP_BloodyTile.BP_BloodyTile_C'"));
+	if (BlueprintBlood.Object) {
+		SubBlood = (UClass*)BlueprintBlood.Object;
+	}
 	static ConstructorHelpers::FObjectFinder<UClass> BlueprintCharacter(TEXT("Blueprint'/Game/Blueprints/BP_Character.BP_Character_C'"));
 	if (BlueprintCharacter.Object) {
 		SubCharacter = (UClass*)BlueprintCharacter.Object;
@@ -32,8 +36,14 @@ void ACPP_BIeluch_GameMode::BeginPlay()
 
 void ACPP_BIeluch_GameMode::Spawn()
 {
-	//generate maze as a matrix
-	TArray<FCharArray> maze = ACPP_BIeluch_GameMode::GenMaze();
+	TArray<FCharArray> maze;
+	bool mazeCheckTest = false;
+	while (!mazeCheckTest)
+	{
+		//generate maze as a matrix
+		 maze = ACPP_BIeluch_GameMode::GenMaze();
+		 mazeCheckTest = ACPP_BIeluch_GameMode::CheckMaze(maze);
+	}
 	//spawn maze 
 	ACPP_BIeluch_GameMode::SpawnMaze(maze);
 	//spawn player
@@ -43,6 +53,7 @@ void ACPP_BIeluch_GameMode::Spawn()
 TArray<FCharArray> ACPP_BIeluch_GameMode::GenMaze()
 {
 	FRandomStream rand;
+	rand.GenerateNewSeed();
 	char wall = 'X';
 	char passage = 'O';
 	int32 width = 17;
@@ -128,17 +139,17 @@ void ACPP_BIeluch_GameMode::SpawnPlayer(TArray<FCharArray> maze)
 		FRotator rotator = { 0,0,0 };
 		FVector PlayerSpawnLoc = FVector(0.0f, 0.0f, 100.0f);
 		UWorld* world = GetWorld();
-		if (maze[8][8] == 'O')
+		if (maze[7][7] == 'O')
 		{
 			PlayerSpawnLoc.X = -221.3;
 			PlayerSpawnLoc.Y = -221.3;
 		}
-		else if (maze[8][9] == 'O')
+		else if (maze[8][7] == 'O')
 		{
 			PlayerSpawnLoc.X = 221.3;
 			PlayerSpawnLoc.Y = -221.3;
 		}
-		else if (maze[9][8] == 'O')
+		else if (maze[7][8] == 'O')
 		{
 			PlayerSpawnLoc.X = -221.3;
 			PlayerSpawnLoc.Y = 221.3;
@@ -155,6 +166,7 @@ void ACPP_BIeluch_GameMode::SpawnPlayer(TArray<FCharArray> maze)
 void ACPP_BIeluch_GameMode::SpawnMaze(TArray<FCharArray> maze)
 {
 	FRandomStream rand;
+	rand.GenerateNewSeed();
 	int numberOfSpawnedBieluchs = 0;
 	if (SubPassage && SubWall && SubBieluchSpawner)
 	{
@@ -165,11 +177,11 @@ void ACPP_BIeluch_GameMode::SpawnMaze(TArray<FCharArray> maze)
 			spawnParams.Owner = this;
 			int possibility = 30;
 			FRotator rotator = { 0,0,0 };
-			float x = 3318.8;
-			float y = 3318.8;
+			float x = -3318.8;
+			float y = -3318.8;
 			for (int i = 0; i < 17; i++)
 			{
-				y = 3318.8;
+				y = -3318.8;
 				for (int j = 0; j < 17; j++)
 				{
 					FVector spawnLocation = { x,y,0 };
@@ -185,13 +197,39 @@ void ACPP_BIeluch_GameMode::SpawnMaze(TArray<FCharArray> maze)
 						}
 						else
 						{
-							world->SpawnActor<ABaseTile>(SubPassage, spawnLocation, rotator, spawnParams);
+							if (rand.RandRange(0, 2)==1)
+							{
+								world->SpawnActor<ABaseTile>(SubBlood, spawnLocation, rotator, spawnParams);
+							}
+							else
+							{
+								world->SpawnActor<ABaseTile>(SubPassage, spawnLocation, rotator, spawnParams);
+							}
 						}
 					}
-					y = y - 442.5;
+					y = y + 442.5;
 				}
-				x = x - 442.5;
+				x = x + 442.5;
 			}
 		}
 	}
+}
+
+bool ACPP_BIeluch_GameMode::CheckMaze(TArray<FCharArray> maze)
+{
+	for (int i = 0; i < 17; i++)
+	{
+		if (maze[i][0] != 'X' || maze[i][16] != 'X')
+			return false;
+		else if (maze[0][i] != 'X' || maze[16][i] != 'X')
+			return false;
+	}
+	FString test = "";
+	for (int i = 0; i < 17; i++)
+	{
+		test += maze[2][i];
+	}
+	if (test == "XXXXXXXXXXXXXXXXX")
+		return false;
+	return true;
 }

@@ -3,6 +3,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Ghost.h"
 #include "MyCharacter.generated.h"
 
 class UCameraComponent;
@@ -26,6 +27,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	bool ghostIsSpawned;
+
+	int ghostTimer;
+
 public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
@@ -34,6 +39,12 @@ public:
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 		float BaseLookUpRate;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		AGhost * CPP_Ghost;
+
+	UPROPERTY()
+		TSubclassOf<class AGhost> SubGhost;
 
 public:
 	// Called every frame
@@ -57,6 +68,9 @@ protected:
 	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
 	 */
 	void LookUpAtRate(float Rate);
+	
+	UFUNCTION(BlueprintCallable)
+		void SpawnOrDestroyGhost(int GainedBieluchs);
 
 protected:
 	// APawn interface

@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 AMyCharacter::AMyCharacter()
@@ -24,20 +25,25 @@ AMyCharacter::AMyCharacter()
 	FirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
 	FirstPersonCameraComponent->SetRelativeLocation(FVector(-39.56f, 1.75f, 64.f)); // Position the camera
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
+
+	static ConstructorHelpers::FObjectFinder<UClass> BlueprintGhost(TEXT("Blueprint'/Game/Blueprints/BP_Ghost.BP_Ghost_C'"));
+	if (BlueprintGhost.Object) {
+		SubGhost = (UClass*)BlueprintGhost.Object;
+	}
 }
 
 // Called when the game starts or when spawned
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
+	ghostTimer = 0;
+	ghostIsSpawned = false;
 }
 
 // Called every frame
 void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
@@ -56,7 +62,6 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAxis("TurnRate", this, &AMyCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AMyCharacter::LookUpAtRate);
-
 }
 
 void AMyCharacter::MoveForward(float Value)
@@ -87,4 +92,45 @@ void AMyCharacter::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+}
+
+
+void AMyCharacter::SpawnOrDestroyGhost(int GainedBieluchs=0)
+{
+	if (ghostIsSpawned == false && ghostTimer >= (45 - 5 * GainedBieluchs)*10)
+	{
+		ghostIsSpawned = true;
+		float tick = GetActorTickInterval();
+		FActorSpawnParameters spawnParams;
+		spawnParams.Owner = this;
+		FRotator rotator = GetActorRotation();
+		rotator.Pitch = 0.0;
+		rotator.Roll = 0.0;
+		FVector location = GetActorLocation();
+		location += GetActorForwardVector() * (500 - GainedBieluchs * 10);
+		location.Z = 0.0;
+		UWorld* world = GetWorld();
+		CPP_Ghost = world->SpawnActor<AGhost>(SubGhost, location, rotator, spawnParams);
+		ghostTimer = 0;
+	}
+	else if (ghostIsSpawned == false && ghostTimer >=0)
+	{
+		ghostTimer++;
+	}
+	else
+	{
+		FVector PlayerLoc = GetActorLocation();
+		FVector GhostLoc = CPP_Ghost->GetActorLocation();
+		if ((UKismetMathLibrary::Distance2D({ PlayerLoc.X, PlayerLoc.Y }, { GhostLoc.X, GhostLoc.Y }) <= 100-10*GainedBieluchs) || ghostTimer>=350)
+		{
+			CPP_Ghost->Destroy();
+			ghostIsSpawned = false;
+			ghostTimer = 0;
+		}
+		else
+		{
+			ghostTimer++;
+			CPP_Ghost->Move(PlayerLoc);
+		}
+	}
 }
