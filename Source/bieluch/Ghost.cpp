@@ -32,7 +32,7 @@ void AGhost::Move(FVector targetLocation)
 	targetLocation *= 1.0;
 	FRotator GhostRotator = UKismetMathLibrary::FindLookAtRotation(GhostLocation, targetLocation);
 	FVector ForwardVector = UKismetMathLibrary::GetForwardVector(GhostRotator);
-	ForwardVector *= 5;
+	ForwardVector *= 20;
 	ForwardVector = { ForwardVector.X, ForwardVector.Y, 0.0 };
 	AddActorWorldOffset(ForwardVector);
 	SetActorRotation(UKismetMathLibrary::MakeRotFromX(ForwardVector));
